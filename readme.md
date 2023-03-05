@@ -8,7 +8,7 @@ The intent is to have a GDELT Kafka Producer that sends GDELT events as JSON mes
 
 This project heavily borrows from the following projects:
 
-- ![Elastic Stack on Docker](https://github.com/deviantony/docker-elk)
-- ![GDELT Twitter Kafka Elk](https://github.com/geoffo-dev/gdelt-twitter-kafka-elk)
+- [Elastic Stack on Docker](https://github.com/deviantony/docker-elk)
+- [GDELT Twitter Kafka Elk](https://github.com/geoffo-dev/gdelt-twitter-kafka-elk)
 
 Nothing in this repository is meant to serve as "best practices". I develop production code for my day job, so this is for personal enjoyment only.
