@@ -46,27 +46,33 @@ def process_events(filename):
         event_reader = csv.DictReader(events, delimiter='\t', fieldnames=eventtitles)
         # Complete the conversion of the geodata to match geopoint ES specification
         for event in event_reader:
-            # Need to check if the fields are populated - float conversions are required
-            if event['ActionGeo_Long'] != '' :
-                event['ActionGeo_Location']= [ float(event['ActionGeo_Long']), float(event['ActionGeo_Lat']) ]
-            if event['Actor1Geo_Lat'] != '' :
-                event['Actor1Geo_Location']= [ float(event['Actor1Geo_Long']), float(event['Actor1Geo_Lat']) ]
-            if event['Actor2Geo_Lat'] != '' :
-                event['Actor2Geo_Location']= [ float(event['Actor2Geo_Long']), float(event['Actor2Geo_Lat']) ]
 
-            # Convert the various codes into text so they can be properly visualised
-            if event['EventCode'] != '':
-                event['EventCode'] = eventcodes[event['EventCode']]
-            if event['EventBaseCode'] != '':
-                event['EventBaseCode'] = eventcodes[event['EventBaseCode']]
-            if event['EventRootCode'] != '':
-                event['EventRootCode'] = eventrootcodes[event['EventRootCode']]
-            if event['QuadClass'] != '':
-                event['QuadClass'] = quadclassnames[event['QuadClass']]
-            if event['IsRootEvent'] != '':
-                event['IsRootEvent'] = rootEventNames[event['IsRootEvent']]
+            try:
+                # Need to check if the fields are populated - float conversions are required
+                if event['ActionGeo_Long'] != '' :
+                    event['ActionGeo_Location']= [ float(event['ActionGeo_Long']), float(event['ActionGeo_Lat']) ]
+                if event['Actor1Geo_Lat'] != '' :
+                    event['Actor1Geo_Location']= [ float(event['Actor1Geo_Long']), float(event['Actor1Geo_Lat']) ]
+                if event['Actor2Geo_Lat'] != '' :
+                    event['Actor2Geo_Location']= [ float(event['Actor2Geo_Long']), float(event['Actor2Geo_Lat']) ]
 
-            producer.send('gdelt', event) 
+                # Convert the various codes into text so they can be properly visualised
+                if event['EventCode'] != '':
+                    event['EventCode'] = eventcodes[event['EventCode']]
+                if event['EventBaseCode'] != '':
+                    event['EventBaseCode'] = eventcodes[event['EventBaseCode']]
+                if event['EventRootCode'] != '':
+                    event['EventRootCode'] = eventrootcodes[event['EventRootCode']]
+                if event['QuadClass'] != '':
+                    event['QuadClass'] = quadclassnames[event['QuadClass']]
+                if event['IsRootEvent'] != '':
+                    event['IsRootEvent'] = rootEventNames[event['IsRootEvent']]
+
+                future = producer.send('gdelt', event) 
+                result = future.get(timeout=60)
+                print(result)
+            except ValueError:
+                print("Could not convert string to float.")
 
 
 def get(_from_date=None):
