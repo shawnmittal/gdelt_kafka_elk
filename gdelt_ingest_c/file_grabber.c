@@ -4,7 +4,7 @@
 #include <curl/curl.h>
 
 char **download_feed_files(void);
-void download_files_from_feeds(char **feed_files);
+int download_files_from_feeds(char **feed_files);
 
 int main(void)
 {
@@ -63,10 +63,39 @@ char **download_feed_files(void)
     return returned_filenames;
 }
 
-void download_files_from_feeds(char **feed_files)
+int download_files_from_feeds(char **feed_files)
 {
+    FILE *fp;
+    char line[200];
+    char *url;
+
     for (int i = 0; i < 2; ++i)
     {
-        printf("%s\n", feed_files[i]);
+        fp = fopen(feed_files[i], "r");
+
+        if (fp == NULL)
+        {
+            printf("Unable to open file.\n");
+            return 1;
+        }
+
+        while (fgets(line, sizeof(line), fp) != NULL)
+        {
+            char *token = strtok(line, " ");
+
+            while (token != NULL)
+            {
+                if (strncmp(token, "http://data.gdeltproject.org", 28) == 0)
+                {
+                    // Remove newline character from last token
+                    token[strcspn(token, "\n")] = 0;
+                    printf("%s\n", token);
+                }
+                token = strtok(NULL, " ");
+            }
+        }
+        fclose(fp);
     }
+
+    return 0;
 }
